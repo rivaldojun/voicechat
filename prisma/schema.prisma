@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://admit_owner:npg_eGgBPt4DVYs0@ep-still-river-abywea6l-pooler.eu-west-2.aws.neon.tech/admit?sslmode=require"
+}
+
+
+model University {
+  id         Int       @id @default(autoincrement())
+  name       String
+  about      String    // JSON string for About array
+  services   String    // JSON string for Services array
+  studentLife String   // JSON string for StudentLife array
+  reviews    String    // JSON string for Reviews array
+  programs   String    // JSON string for Programs array
+  statistics String    // JSON string for statistics array
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  
+  // Relation to Program
+  programsList Program[]
+}
+
+model Program {
+  id                 Int       @id @default(autoincrement())
+  title              String
+  about              String
+  universityId       Int
+  university         University @relation(fields: [universityId], references: [id])
+  universityName     String
+  universityPage     String?
+  statistics         String    // JSON string for statistics array
+  type               String    @default("master")
+  modality           String
+  language           String?
+  scholarships       String?   // JSON string for Scholarships array
+  languageTest       String?   // JSON string for Language test array
+  delivered          String?
+  abilities          String?   // JSON string for Abilities array
+  StudyDescription  String?
+  programmeStructure String?   // JSON string for Programme Structure array
+  generalRequirements String?  // JSON string for General Requirements array
+  createdAt          DateTime  @default(now())
+  partner             Boolean
+  updatedAt          DateTime  @updatedAt
+}
