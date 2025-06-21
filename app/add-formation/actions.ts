@@ -32,7 +32,25 @@ interface ProgramFormData {
 
 export async function addProgram(formData: ProgramFormData) {
   try {
-    // Préparer les données pour la base SQL
+    // Préparer le texte pour l'embedding ChromaDB
+    const textForEmbedding = `
+      Programme: ${formData.title}
+      Type: ${formData.type}
+      Université: ${formData.universityName}
+      À propos: ${formData.about}
+      Description des études: ${formData.StudyDescription}
+      Langue: ${formData.language}
+      Mode de livraison: ${formData.delivered}
+      Bourses: ${formData.scholarships.join(", ")}
+      Tests de langue: ${formData.languageTest.join(", ")}
+      Compétences: ${formData.abilities.join(", ")}
+      Structure: ${formData.programmeStructure.join(", ")}
+      Exigences: ${formData.generalRequirements.join(", ")}
+      Statistiques: ${formData.statistics.map((s) => `${s.label}: ${s.value}`).join(", ")}
+    `.trim()
+
+    const embedding= await embedder.generate(textForEmbedding)
+
     const programData = {
       title: formData.title,
       about: formData.about,
@@ -51,88 +69,66 @@ export async function addProgram(formData: ProgramFormData) {
       StudyDescription: formData.StudyDescription || null,
       programmeStructure: JSON.stringify(formData.programmeStructure.filter((item) => item.trim() !== "")),
       generalRequirements: JSON.stringify(formData.generalRequirements.filter((item) => item.trim() !== "")),
+      embedding: embedding,
+
     }
 
     // Simuler l'insertion en base SQL (remplacer par votre ORM/client DB)
-    // const program = await prisma.program.create({ data: programData })
+    const program = await prisma.program.create({ data: programData })
 
-    // Pour la démo, on simule un ID
-    const programId = Math.floor(Math.random() * 10000)
 
-    // Préparer le texte pour l'embedding ChromaDB
-    const textForEmbedding = `
-      Programme: ${formData.title}
-      Type: ${formData.type}
-      Université: ${formData.universityName}
-      À propos: ${formData.about}
-      Description des études: ${formData.StudyDescription}
-      Langue: ${formData.language}
-      Mode de livraison: ${formData.delivered}
-      Bourses: ${formData.scholarships.join(", ")}
-      Tests de langue: ${formData.languageTest.join(", ")}
-      Compétences: ${formData.abilities.join(", ")}
-      Structure: ${formData.programmeStructure.join(", ")}
-      Exigences: ${formData.generalRequirements.join(", ")}
-      Statistiques: ${formData.statistics.map((s) => `${s.label}: ${s.value}`).join(", ")}
-    `.trim()
-
-    // Créer ou obtenir la collection ChromaDB pour les programmes
-    let collection
-    try {
-      collection = await client.getCollection({
-        name: "programs",
-        embeddingFunction: embedder,
-      })
-    } catch (error) {
-      collection = await client.createCollection({
-        name: "programs",
-        embeddingFunction: embedder,
-      })
-    }
-
-    // Ajouter à ChromaDB
-    await collection.add({
-      ids: [`program_${programId}`],
-      documents: [textForEmbedding],
-      metadatas: [
-        {
-          id: programId,
-          title: formData.title,
-          type: formData.type,
-          university_id: Number.parseInt(formData.universityId),
-          university_name: formData.universityName,
-          language: formData.language,
-          program_type: "program",
-          created_at: new Date().toISOString(),
-        },
-      ],
-    })
-
-    return { success: true, id: programId }
+    return { success: true, id: program.id }
   } catch (error) {
     console.error("Erreur lors de l'ajout du programme:", error)
     return { success: false, error: "Erreur lors de l'ajout du programme" }
   }
 }
 
+function cosineSimilarity(a: number[], b: number[]): number {
+  const dot = a.reduce((acc, val, i) => acc + val * b[i], 0)
+  const normA = Math.sqrt(a.reduce((acc, val) => acc + val * val, 0))
+  const normB = Math.sqrt(b.reduce((acc, val) => acc + val * val, 0))
+  return dot / (normA * normB)
+}
+
 export async function searchPrograms(query: string) {
   try {
-    const collection = await client.getCollection({
-      name: "programs",
-      embeddingFunction: embedder,
+    // Générer l'embedding de la requête
+    const queryEmbedding = await embedder.generate(query)
+
+    // Récupérer tous les programmes avec embedding (attention à la perf si beaucoup de lignes)
+    const programs = await prisma.program.findMany({
+      select: {
+        id: true,
+        title: true,
+        type: true,
+        universityName: true,
+        embedding: true,
+      },
+      where: {
+        embedding: {
+          not: null,
+        },
+      },
     })
 
-    const results = await collection.query({
-      queryTexts: [query],
-      nResults: 10,
-    })
+    // Calcul de similarité cosinus pour chaque embedding
+    const scoredPrograms = programs
+      .map((program: { id: number; title: string; type: string; universityName: string; embedding: number[] | null }) => {
+        const similarity = cosineSimilarity(queryEmbedding, program.embedding as number[])
+        return { ...program, similarity }
+      })
+      .sort((a: { similarity: number }, b: { similarity: number }) => b.similarity - a.similarity) // Tri décroissant de similarité
+      .slice(0, 10)
 
-    return { success: true, data: results }
+    return { success: true, data: scoredPrograms }
+
   } catch (error) {
     console.error("Erreur lors de la recherche:", error)
     return { success: false, error: "Erreur lors de la recherche" }
   }
 }
+
 
 export async function getProgramsByUniversity(universityId: number) {
   try {
@@ -141,13 +137,6 @@ export async function getProgramsByUniversity(universityId: number) {
       where: { universityId },
       select: { id: true, title: true, type: true }
     })
-
-    // Pour la démo, on retourne des données simulées
-    // const programs = [
-    //   { id: 1, title: "Master en Informatique", type: "master" },
-    //   { id: 2, title: "Bachelor en Mathématiques", type: "bachelor" },
-    // ]
-
     return { success: true, data: programs }
   } catch (error) {
     console.error("Erreur lors de la récupération des programmes:", error)

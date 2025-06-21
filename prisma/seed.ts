@@ -29,39 +29,39 @@ async function readJSONFile(filename: string) {
   }
 }
 
-async function setupChromaCollections() {
-  let universitiesCollection, programsCollection
+// async function setupChromaCollections() {
+//   let universitiesCollection, programsCollection
 
-  try {
-    // Essayer de récupérer les collections existantes
-    universitiesCollection = await client.getCollection({
-      name: "universities",
-      embeddingFunction: embedder,
-    })
-  } catch (error) {
-    // Créer la collection si elle n'existe pas
-    universitiesCollection = await client.createCollection({
-      name: "universities",
-      embeddingFunction: embedder,
-    })
-  }
+//   try {
+//     // Essayer de récupérer les collections existantes
+//     universitiesCollection = await client.getCollection({
+//       name: "universities",
+//       embeddingFunction: embedder,
+//     })
+//   } catch (error) {
+//     // Créer la collection si elle n'existe pas
+//     universitiesCollection = await client.createCollection({
+//       name: "universities",
+//       embeddingFunction: embedder,
+//     })
+//   }
 
-  try {
-    programsCollection = await client.getCollection({
-      name: "programs",
-      embeddingFunction: embedder,
-    })
-  } catch (error) {
-    programsCollection = await client.createCollection({
-      name: "programs",
-      embeddingFunction: embedder,
-    })
-  }
+//   try {
+//     programsCollection = await client.getCollection({
+//       name: "programs",
+//       embeddingFunction: embedder,
+//     })
+//   } catch (error) {
+//     programsCollection = await client.createCollection({
+//       name: "programs",
+//       embeddingFunction: embedder,
+//     })
+//   }
 
-  return { universitiesCollection, programsCollection }
-}
+//   return { universitiesCollection, programsCollection }
+// }
 
-async function seedUniversities(universitiesData: Array<{ name: string; About?: any[]; Services?: any[]; StudentLife?: any[]; Reviews?: any[]; Programs?: any[]; statistics?: any[] }>, universitiesCollection: { add: (data: { ids: string[]; documents: string[]; metadatas: any[] }) => Promise<void> }) {
+async function seedUniversities(universitiesData: Array<{ name: string; About?: any[]; Services?: any[]; StudentLife?: any[]; Reviews?: any[]; Programs?: any[]; statistics?: any[] }>) {
   console.log("🏫 Ajout des universités...")
   const universityMap = new Map()
 
@@ -74,24 +74,7 @@ async function seedUniversities(universitiesData: Array<{ name: string; About?: 
         },
       })
       if (!uni_exist) {
-        const universityForDB = {
-          name: universityData.name,
-          about: JSON.stringify(universityData.About || []),
-          services: JSON.stringify(universityData.Services || []),
-          studentLife: JSON.stringify(universityData.StudentLife || []),
-          reviews: JSON.stringify(universityData.Reviews || []),
-          programs: JSON.stringify(universityData.Programs || []),
-          statistics: JSON.stringify(universityData.statistics || []),
-        }
-
-        // Insérer dans la base SQL
-        const university = await prisma.university.create({
-          data: universityForDB,
-        })
-
-        // Stocker le mapping nom -> ID pour les programmes
-        universityMap.set(universityData.name, university.id)
-
+        
         // Préparer le texte pour l'embedding ChromaDB
         const aboutText = universityData.About?.map((item) => `${item.label}: ${item.value}`).join(". ") || ""
         const servicesText = universityData.Services?.map((item) => `${item.label}: ${item.value}`).join(". ") || ""
@@ -109,20 +92,40 @@ async function seedUniversities(universitiesData: Array<{ name: string; About?: 
           Programmes: ${programsText}
           Statistiques: ${statisticsText}
         `.trim()
+        const embedding = await embedder.generate(textForEmbedding)
+
+        const universityForDB = {
+          name: universityData.name,
+          about: JSON.stringify(universityData.About || []),
+          services: JSON.stringify(universityData.Services || []),
+          studentLife: JSON.stringify(universityData.StudentLife || []),
+          reviews: JSON.stringify(universityData.Reviews || []),
+          programs: JSON.stringify(universityData.Programs || []),
+          statistics: JSON.stringify(universityData.statistics || []),
+          embedding: embedding
+        }
+
+        // Insérer dans la base SQL
+        const university = await prisma.university.create({
+          data: universityForDB,
+        })
+
+        // Stocker le mapping nom -> ID pour les programmes
+        universityMap.set(universityData.name, university.id)
 
         // Ajouter à ChromaDB
-        await universitiesCollection.add({
-          ids: [`university_${university.id}`],
-          documents: [textForEmbedding],
-          metadatas: [
-            {
-              id: university.id,
-              name: universityData.name,
-              type: "university",
-              created_at: new Date().toISOString(),
-            },
-          ],
-        })
+        // await universitiesCollection.add({
+        //   ids: [`university_${university.id}`],
+        //   documents: [textForEmbedding],
+        //   metadatas: [
+        //     {
+        //       id: university.id,
+        //       name: universityData.name,
+        //       type: "university",
+        //       created_at: new Date().toISOString(),
+        //     },
+        //   ],
+        // })
         console.log(`✅ Université ajoutée: ${universityData.name} (ID: ${university.id})`)
     }
     } catch (error) {
@@ -151,10 +154,7 @@ async function seedPrograms(
     Programme_Structure?: Array<string | { item: string }>;
     General_Requirements?: Array<string | { item: string }>;
   }>,
-  universityMap: Map<string, string>,
-  programsCollection: {
-    add: (data: { ids: string[]; documents: string[]; metadatas: any[] }) => Promise<void>;
-  }
+  universityMap: Map<string, string>
 ) {
   console.log("📚 Ajout des programmes...")
   const urls={
@@ -177,30 +177,7 @@ async function seedPrograms(
       }
 
       // Préparer les données pour Prisma
-      const programForDB = {
-        title: programData.Title || "",
-        about: programData.About || "",
-        universityId: universityId,
-        universityName: programData.University || "",
-        universityPage: programData.University_page || null,
-        statistics: JSON.stringify(programData.statistics || []),
-        type: urls[programData.Portal as keyof typeof urls],
-        modality: programData.Type || null,
-        language: programData.Language || null,
-        scholarships: JSON.stringify(programData.scholarships || []),
-        languageTest: JSON.stringify(programData.Language_test || []),
-        delivered: programData.Delivered || null,
-        abilities: JSON.stringify(programData.Abilities || []),
-        StudyDescription: programData.Study_Description || null,
-        programmeStructure: JSON.stringify(programData.Programme_Structure || []),
-        generalRequirements: JSON.stringify(programData.General_Requirements || []),
-        partner: Math.random() < 0.5
-      }
-
-      // Insérer dans la base SQL
-      const program = await prisma.program.create({
-        data: programForDB,
-      })
+      
 
       // Préparer le texte pour l'embedding ChromaDB
       const statisticsText = programData.statistics?.map((stat) => `${stat.label}: ${stat.value}`).join(", ") || ""
@@ -231,31 +208,34 @@ async function seedPrograms(
         Exigences: ${requirementsText}
         Statistiques: ${statisticsText}
       `.trim()
+      
+      const embedding=await embedder.generate(textForEmbedding)
 
-      // Ajouter à ChromaDB
-      await programsCollection.add({
-        ids: [`program_${program.id}`],
-        documents: [textForEmbedding],
-        metadatas: [
-          {
-            id: program.id,
-            title: programData.Title,
-            type: urls[programData.Portal as keyof typeof urls],
-            university_id: universityId,
-            university_name: programData.University,
-            StudyDescription: programData.Study_Description || null,
-            school_fees: programData.statistics?.find((s) => s.label === "Tuition fee")?.value ?? "Non spécifié",
-            modality: programData.Type || null,
-            duration: programData.statistics?.find((s) => s.label === "Duration")?.value ?? "Non spécifié",
-            language: programData.Language,
-            delivered: programData.Delivered,
-            program_type: "program",
-            partner: program.partner,
-            created_at: new Date().toISOString(),
-          },
-        ],
+      const programForDB = {
+        title: programData.Title || "",
+        about: programData.About || "",
+        universityId: universityId,
+        universityName: programData.University || "",
+        universityPage: programData.University_page || null,
+        statistics: JSON.stringify(programData.statistics || []),
+        type: urls[programData.Portal as keyof typeof urls],
+        modality: programData.Type || null,
+        language: programData.Language || null,
+        scholarships: JSON.stringify(programData.scholarships || []),
+        languageTest: JSON.stringify(programData.Language_test || []),
+        delivered: programData.Delivered || null,
+        abilities: JSON.stringify(programData.Abilities || []),
+        StudyDescription: programData.Study_Description || null,
+        programmeStructure: JSON.stringify(programData.Programme_Structure || []),
+        generalRequirements: JSON.stringify(programData.General_Requirements || []),
+        partner: Math.random() < 0.5,
+        embedding: embedding,
+        
+      }
+      // Insérer dans la base SQL
+      const program = await prisma.program.create({
+        data: programForDB,
       })
-
       console.log(`✅ Programme ajouté: ${programData.Title} (ID: ${program.id})`)
     } catch (error) {
       console.error(`❌ Erreur lors de l'ajout du programme ${programData.Title}:`, error)
@@ -278,13 +258,13 @@ async function clearDatabase() {
     console.log("✅ Universités supprimées")
 
     // Nettoyer ChromaDB
-    try {
-      await client.deleteCollection({ name: "universities" })
-      await client.deleteCollection({ name: "programs" })
-      console.log("✅ Collections ChromaDB supprimées")
-    } catch (error) {
-      console.log("ℹ️  Collections ChromaDB n'existaient pas ou erreur lors de la suppression")
-    }
+    // try {
+    //   await client.deleteCollection({ name: "universities" })
+    //   await client.deleteCollection({ name: "programs" })
+    //   console.log("✅ Collections ChromaDB supprimées")
+    // } catch (error) {
+    //   console.log("ℹ️  Collections ChromaDB n'existaient pas ou erreur lors de la suppression")
+    // }
   } catch (error) {
     console.error("❌ Erreur lors du nettoyage:", error)
   }
@@ -293,7 +273,6 @@ async function clearDatabase() {
 async function main() {
   try {
     console.log("🚀 Début du processus de seed...")
-    await testConnection()
 
     // Nettoyer la base de données
     await clearDatabase()
@@ -307,13 +286,14 @@ async function main() {
 
     // Configurer ChromaDB
     console.log("🔧 Configuration de ChromaDB...")
-    const { universitiesCollection, programsCollection } = await setupChromaCollections()
+    // const { universitiesCollection, programsCollection } = await setupChromaCollections()
 
     // Ajouter les universités
-    const universityMap = await seedUniversities(universitiesData, universitiesCollection)
+    const universityMap = await seedUniversities(universitiesData)
+    console.log(`🏫 ${universityMap.size} universités ajoutées avec succès`)
 
     // Ajouter les programmes
-    await seedPrograms(programsData, universityMap, programsCollection)
+    await seedPrograms(programsData, universityMap)
 
     console.log("🎉 Processus de seed terminé avec succès!")
 
@@ -334,3 +314,30 @@ async function main() {
 
 // Exécuter le script
 main()
+
+
+
+
+      // Ajouter à ChromaDB
+      // await programsCollection.add({
+      //   ids: [`program_${program.id}`],
+      //   documents: [textForEmbedding],
+      //   metadatas: [
+      //     {
+      //       id: program.id,
+      //       title: programData.Title,
+      //       type: urls[programData.Portal as keyof typeof urls],
+      //       university_id: universityId,
+      //       university_name: programData.University,
+      //       StudyDescription: programData.Study_Description || null,
+      //       school_fees: programData.statistics?.find((s) => s.label === "Tuition fee")?.value ?? "Non spécifié",
+      //       modality: programData.Type || null,
+      //       duration: programData.statistics?.find((s) => s.label === "Duration")?.value ?? "Non spécifié",
+      //       language: programData.Language,
+      //       delivered: programData.Delivered,
+      //       program_type: "program",
+      //       partner: program.partner,
+      //       created_at: new Date().toISOString(),
+      //     },
+      //   ],
+      // })

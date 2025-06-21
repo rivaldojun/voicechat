@@ -1004,10 +1004,12 @@ export namespace Prisma {
 
   export type UniversityAvgAggregateOutputType = {
     id: number | null
+    embedding: number | null
   }
 
   export type UniversitySumAggregateOutputType = {
     id: number | null
+    embedding: number[]
   }
 
   export type UniversityMinAggregateOutputType = {
@@ -1047,16 +1049,19 @@ export namespace Prisma {
     statistics: number
     createdAt: number
     updatedAt: number
+    embedding: number
     _all: number
   }
 
 
   export type UniversityAvgAggregateInputType = {
     id?: true
+    embedding?: true
   }
 
   export type UniversitySumAggregateInputType = {
     id?: true
+    embedding?: true
   }
 
   export type UniversityMinAggregateInputType = {
@@ -1096,6 +1101,7 @@ export namespace Prisma {
     statistics?: true
     createdAt?: true
     updatedAt?: true
+    embedding?: true
     _all?: true
   }
 
@@ -1196,6 +1202,7 @@ export namespace Prisma {
     statistics: string
     createdAt: Date
     updatedAt: Date
+    embedding: number[]
     _count: UniversityCountAggregateOutputType | null
     _avg: UniversityAvgAggregateOutputType | null
     _sum: UniversitySumAggregateOutputType | null
@@ -1228,6 +1235,7 @@ export namespace Prisma {
     statistics?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    embedding?: boolean
     programsList?: boolean | University$programsListArgs<ExtArgs>
     _count?: boolean | UniversityCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["university"]>
@@ -1243,6 +1251,7 @@ export namespace Prisma {
     statistics?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    embedding?: boolean
   }, ExtArgs["result"]["university"]>
 
   export type UniversitySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -1256,6 +1265,7 @@ export namespace Prisma {
     statistics?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    embedding?: boolean
   }, ExtArgs["result"]["university"]>
 
   export type UniversitySelectScalar = {
@@ -1269,9 +1279,10 @@ export namespace Prisma {
     statistics?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    embedding?: boolean
   }
 
-  export type UniversityOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "about" | "services" | "studentLife" | "reviews" | "programs" | "statistics" | "createdAt" | "updatedAt", ExtArgs["result"]["university"]>
+  export type UniversityOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "about" | "services" | "studentLife" | "reviews" | "programs" | "statistics" | "createdAt" | "updatedAt" | "embedding", ExtArgs["result"]["university"]>
   export type UniversityInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     programsList?: boolean | University$programsListArgs<ExtArgs>
     _count?: boolean | UniversityCountOutputTypeDefaultArgs<ExtArgs>
@@ -1295,6 +1306,7 @@ export namespace Prisma {
       statistics: string
       createdAt: Date
       updatedAt: Date
+      embedding: number[]
     }, ExtArgs["result"]["university"]>
     composites: {}
   }
@@ -1729,6 +1741,7 @@ export namespace Prisma {
     readonly statistics: FieldRef<"University", 'String'>
     readonly createdAt: FieldRef<"University", 'DateTime'>
     readonly updatedAt: FieldRef<"University", 'DateTime'>
+    readonly embedding: FieldRef<"University", 'Float[]'>
   }
     
 
@@ -1958,6 +1971,7 @@ export namespace Prisma {
      * The data used to create many Universities.
      */
     data: UniversityCreateManyInput | UniversityCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -1976,6 +1990,7 @@ export namespace Prisma {
      * The data used to create many Universities.
      */
     data: UniversityCreateManyInput | UniversityCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -2172,11 +2187,13 @@ export namespace Prisma {
   export type ProgramAvgAggregateOutputType = {
     id: number | null
     universityId: number | null
+    embedding: number | null
   }
 
   export type ProgramSumAggregateOutputType = {
     id: number | null
     universityId: number | null
+    embedding: number[]
   }
 
   export type ProgramMinAggregateOutputType = {
@@ -2246,6 +2263,7 @@ export namespace Prisma {
     createdAt: number
     partner: number
     updatedAt: number
+    embedding: number
     _all: number
   }
 
@@ -2253,11 +2271,13 @@ export namespace Prisma {
   export type ProgramAvgAggregateInputType = {
     id?: true
     universityId?: true
+    embedding?: true
   }
 
   export type ProgramSumAggregateInputType = {
     id?: true
     universityId?: true
+    embedding?: true
   }
 
   export type ProgramMinAggregateInputType = {
@@ -2327,6 +2347,7 @@ export namespace Prisma {
     createdAt?: true
     partner?: true
     updatedAt?: true
+    embedding?: true
     _all?: true
   }
 
@@ -2437,6 +2458,7 @@ export namespace Prisma {
     createdAt: Date
     partner: boolean
     updatedAt: Date
+    embedding: number[]
     _count: ProgramCountAggregateOutputType | null
     _avg: ProgramAvgAggregateOutputType | null
     _sum: ProgramSumAggregateOutputType | null
@@ -2479,6 +2501,7 @@ export namespace Prisma {
     createdAt?: boolean
     partner?: boolean
     updatedAt?: boolean
+    embedding?: boolean
     university?: boolean | UniversityDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["program"]>
 
@@ -2503,6 +2526,7 @@ export namespace Prisma {
     createdAt?: boolean
     partner?: boolean
     updatedAt?: boolean
+    embedding?: boolean
     university?: boolean | UniversityDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["program"]>
 
@@ -2527,6 +2551,7 @@ export namespace Prisma {
     createdAt?: boolean
     partner?: boolean
     updatedAt?: boolean
+    embedding?: boolean
     university?: boolean | UniversityDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["program"]>
 
@@ -2551,9 +2576,10 @@ export namespace Prisma {
     createdAt?: boolean
     partner?: boolean
     updatedAt?: boolean
+    embedding?: boolean
   }
 
-  export type ProgramOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "about" | "universityId" | "universityName" | "universityPage" | "statistics" | "type" | "modality" | "language" | "scholarships" | "languageTest" | "delivered" | "abilities" | "StudyDescription" | "programmeStructure" | "generalRequirements" | "createdAt" | "partner" | "updatedAt", ExtArgs["result"]["program"]>
+  export type ProgramOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "about" | "universityId" | "universityName" | "universityPage" | "statistics" | "type" | "modality" | "language" | "scholarships" | "languageTest" | "delivered" | "abilities" | "StudyDescription" | "programmeStructure" | "generalRequirements" | "createdAt" | "partner" | "updatedAt" | "embedding", ExtArgs["result"]["program"]>
   export type ProgramInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     university?: boolean | UniversityDefaultArgs<ExtArgs>
   }
@@ -2590,6 +2616,7 @@ export namespace Prisma {
       createdAt: Date
       partner: boolean
       updatedAt: Date
+      embedding: number[]
     }, ExtArgs["result"]["program"]>
     composites: {}
   }
@@ -3034,6 +3061,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Program", 'DateTime'>
     readonly partner: FieldRef<"Program", 'Boolean'>
     readonly updatedAt: FieldRef<"Program", 'DateTime'>
+    readonly embedding: FieldRef<"Program", 'Float[]'>
   }
     
 
@@ -3263,6 +3291,7 @@ export namespace Prisma {
      * The data used to create many Programs.
      */
     data: ProgramCreateManyInput | ProgramCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -3281,6 +3310,7 @@ export namespace Prisma {
      * The data used to create many Programs.
      */
     data: ProgramCreateManyInput | ProgramCreateManyInput[]
+    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -3451,6 +3481,9 @@ export namespace Prisma {
    */
 
   export const TransactionIsolationLevel: {
+    ReadUncommitted: 'ReadUncommitted',
+    ReadCommitted: 'ReadCommitted',
+    RepeatableRead: 'RepeatableRead',
     Serializable: 'Serializable'
   };
 
@@ -3467,7 +3500,8 @@ export namespace Prisma {
     programs: 'programs',
     statistics: 'statistics',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    embedding: 'embedding'
   };
 
   export type UniversityScalarFieldEnum = (typeof UniversityScalarFieldEnum)[keyof typeof UniversityScalarFieldEnum]
@@ -3493,7 +3527,8 @@ export namespace Prisma {
     generalRequirements: 'generalRequirements',
     createdAt: 'createdAt',
     partner: 'partner',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    embedding: 'embedding'
   };
 
   export type ProgramScalarFieldEnum = (typeof ProgramScalarFieldEnum)[keyof typeof ProgramScalarFieldEnum]
@@ -3505,6 +3540,14 @@ export namespace Prisma {
   };
 
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+  export const QueryMode: {
+    default: 'default',
+    insensitive: 'insensitive'
+  };
+
+  export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
   export const NullsOrder: {
@@ -3528,9 +3571,23 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
    * Reference to a field of type 'String'
    */
   export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String'>
+    
+
+
+  /**
+   * Reference to a field of type 'String[]'
+   */
+  export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String[]'>
     
 
 
@@ -3542,9 +3599,16 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Boolean'
+   * Reference to a field of type 'DateTime[]'
    */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+  export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 
@@ -3552,6 +3616,13 @@ export namespace Prisma {
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
   /**
    * Deep Input Types
@@ -3572,6 +3643,7 @@ export namespace Prisma {
     statistics?: StringFilter<"University"> | string
     createdAt?: DateTimeFilter<"University"> | Date | string
     updatedAt?: DateTimeFilter<"University"> | Date | string
+    embedding?: FloatNullableListFilter<"University">
     programsList?: ProgramListRelationFilter
   }
 
@@ -3586,6 +3658,7 @@ export namespace Prisma {
     statistics?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    embedding?: SortOrder
     programsList?: ProgramOrderByRelationAggregateInput
   }
 
@@ -3603,6 +3676,7 @@ export namespace Prisma {
     statistics?: StringFilter<"University"> | string
     createdAt?: DateTimeFilter<"University"> | Date | string
     updatedAt?: DateTimeFilter<"University"> | Date | string
+    embedding?: FloatNullableListFilter<"University">
     programsList?: ProgramListRelationFilter
   }, "id">
 
@@ -3617,6 +3691,7 @@ export namespace Prisma {
     statistics?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    embedding?: SortOrder
     _count?: UniversityCountOrderByAggregateInput
     _avg?: UniversityAvgOrderByAggregateInput
     _max?: UniversityMaxOrderByAggregateInput
@@ -3638,6 +3713,7 @@ export namespace Prisma {
     statistics?: StringWithAggregatesFilter<"University"> | string
     createdAt?: DateTimeWithAggregatesFilter<"University"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"University"> | Date | string
+    embedding?: FloatNullableListFilter<"University">
   }
 
   export type ProgramWhereInput = {
@@ -3664,6 +3740,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Program"> | Date | string
     partner?: BoolFilter<"Program"> | boolean
     updatedAt?: DateTimeFilter<"Program"> | Date | string
+    embedding?: FloatNullableListFilter<"Program">
     university?: XOR<UniversityScalarRelationFilter, UniversityWhereInput>
   }
 
@@ -3688,6 +3765,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     partner?: SortOrder
     updatedAt?: SortOrder
+    embedding?: SortOrder
     university?: UniversityOrderByWithRelationInput
   }
 
@@ -3715,6 +3793,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Program"> | Date | string
     partner?: BoolFilter<"Program"> | boolean
     updatedAt?: DateTimeFilter<"Program"> | Date | string
+    embedding?: FloatNullableListFilter<"Program">
     university?: XOR<UniversityScalarRelationFilter, UniversityWhereInput>
   }, "id">
 
@@ -3739,6 +3818,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     partner?: SortOrder
     updatedAt?: SortOrder
+    embedding?: SortOrder
     _count?: ProgramCountOrderByAggregateInput
     _avg?: ProgramAvgOrderByAggregateInput
     _max?: ProgramMaxOrderByAggregateInput
@@ -3770,6 +3850,7 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Program"> | Date | string
     partner?: BoolWithAggregatesFilter<"Program"> | boolean
     updatedAt?: DateTimeWithAggregatesFilter<"Program"> | Date | string
+    embedding?: FloatNullableListFilter<"Program">
   }
 
   export type UniversityCreateInput = {
@@ -3782,6 +3863,7 @@ export namespace Prisma {
     statistics: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    embedding?: UniversityCreateembeddingInput | number[]
     programsList?: ProgramCreateNestedManyWithoutUniversityInput
   }
 
@@ -3796,6 +3878,7 @@ export namespace Prisma {
     statistics: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    embedding?: UniversityCreateembeddingInput | number[]
     programsList?: ProgramUncheckedCreateNestedManyWithoutUniversityInput
   }
 
@@ -3809,6 +3892,7 @@ export namespace Prisma {
     statistics?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    embedding?: UniversityUpdateembeddingInput | number[]
     programsList?: ProgramUpdateManyWithoutUniversityNestedInput
   }
 
@@ -3823,6 +3907,7 @@ export namespace Prisma {
     statistics?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    embedding?: UniversityUpdateembeddingInput | number[]
     programsList?: ProgramUncheckedUpdateManyWithoutUniversityNestedInput
   }
 
@@ -3837,6 +3922,7 @@ export namespace Prisma {
     statistics: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    embedding?: UniversityCreateembeddingInput | number[]
   }
 
   export type UniversityUpdateManyMutationInput = {
@@ -3849,6 +3935,7 @@ export namespace Prisma {
     statistics?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    embedding?: UniversityUpdateembeddingInput | number[]
   }
 
   export type UniversityUncheckedUpdateManyInput = {
@@ -3862,6 +3949,7 @@ export namespace Prisma {
     statistics?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    embedding?: UniversityUpdateembeddingInput | number[]
   }
 
   export type ProgramCreateInput = {
@@ -3883,6 +3971,7 @@ export namespace Prisma {
     createdAt?: Date | string
     partner: boolean
     updatedAt?: Date | string
+    embedding?: ProgramCreateembeddingInput | number[]
     university: UniversityCreateNestedOneWithoutProgramsListInput
   }
 
@@ -3907,6 +3996,7 @@ export namespace Prisma {
     createdAt?: Date | string
     partner: boolean
     updatedAt?: Date | string
+    embedding?: ProgramCreateembeddingInput | number[]
   }
 
   export type ProgramUpdateInput = {
@@ -3928,6 +4018,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     partner?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    embedding?: ProgramUpdateembeddingInput | number[]
     university?: UniversityUpdateOneRequiredWithoutProgramsListNestedInput
   }
 
@@ -3952,6 +4043,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     partner?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    embedding?: ProgramUpdateembeddingInput | number[]
   }
 
   export type ProgramCreateManyInput = {
@@ -3975,6 +4067,7 @@ export namespace Prisma {
     createdAt?: Date | string
     partner: boolean
     updatedAt?: Date | string
+    embedding?: ProgramCreateembeddingInput | number[]
   }
 
   export type ProgramUpdateManyMutationInput = {
@@ -3996,6 +4089,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     partner?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    embedding?: ProgramUpdateembeddingInput | number[]
   }
 
   export type ProgramUncheckedUpdateManyInput = {
@@ -4019,12 +4113,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     partner?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    embedding?: ProgramUpdateembeddingInput | number[]
   }
 
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -4034,8 +4129,8 @@ export namespace Prisma {
 
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[]
-    notIn?: string[]
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -4043,18 +4138,27 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type FloatNullableListFilter<$PrismaModel = never> = {
+    equals?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    has?: number | FloatFieldRefInput<$PrismaModel> | null
+    hasEvery?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    hasSome?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
   }
 
   export type ProgramListRelationFilter = {
@@ -4078,10 +4182,12 @@ export namespace Prisma {
     statistics?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    embedding?: SortOrder
   }
 
   export type UniversityAvgOrderByAggregateInput = {
     id?: SortOrder
+    embedding?: SortOrder
   }
 
   export type UniversityMaxOrderByAggregateInput = {
@@ -4112,12 +4218,13 @@ export namespace Prisma {
 
   export type UniversitySumOrderByAggregateInput = {
     id?: SortOrder
+    embedding?: SortOrder
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -4132,8 +4239,8 @@ export namespace Prisma {
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[]
-    notIn?: string[]
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -4141,6 +4248,7 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
     not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
@@ -4149,8 +4257,8 @@ export namespace Prisma {
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -4163,8 +4271,8 @@ export namespace Prisma {
 
   export type StringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | null
-    notIn?: string[] | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -4172,6 +4280,7 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
@@ -4211,11 +4320,13 @@ export namespace Prisma {
     createdAt?: SortOrder
     partner?: SortOrder
     updatedAt?: SortOrder
+    embedding?: SortOrder
   }
 
   export type ProgramAvgOrderByAggregateInput = {
     id?: SortOrder
     universityId?: SortOrder
+    embedding?: SortOrder
   }
 
   export type ProgramMaxOrderByAggregateInput = {
@@ -4267,12 +4378,13 @@ export namespace Prisma {
   export type ProgramSumOrderByAggregateInput = {
     id?: SortOrder
     universityId?: SortOrder
+    embedding?: SortOrder
   }
 
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | null
-    notIn?: string[] | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -4280,6 +4392,7 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
     not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
@@ -4292,6 +4405,10 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type UniversityCreateembeddingInput = {
+    set: number[]
   }
 
   export type ProgramCreateNestedManyWithoutUniversityInput = {
@@ -4314,6 +4431,11 @@ export namespace Prisma {
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
+  }
+
+  export type UniversityUpdateembeddingInput = {
+    set?: number[]
+    push?: number | number[]
   }
 
   export type ProgramUpdateManyWithoutUniversityNestedInput = {
@@ -4352,6 +4474,10 @@ export namespace Prisma {
     deleteMany?: ProgramScalarWhereInput | ProgramScalarWhereInput[]
   }
 
+  export type ProgramCreateembeddingInput = {
+    set: number[]
+  }
+
   export type UniversityCreateNestedOneWithoutProgramsListInput = {
     create?: XOR<UniversityCreateWithoutProgramsListInput, UniversityUncheckedCreateWithoutProgramsListInput>
     connectOrCreate?: UniversityCreateOrConnectWithoutProgramsListInput
@@ -4366,6 +4492,11 @@ export namespace Prisma {
     set?: boolean
   }
 
+  export type ProgramUpdateembeddingInput = {
+    set?: number[]
+    push?: number | number[]
+  }
+
   export type UniversityUpdateOneRequiredWithoutProgramsListNestedInput = {
     create?: XOR<UniversityCreateWithoutProgramsListInput, UniversityUncheckedCreateWithoutProgramsListInput>
     connectOrCreate?: UniversityCreateOrConnectWithoutProgramsListInput
@@ -4376,8 +4507,8 @@ export namespace Prisma {
 
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -4387,8 +4518,8 @@ export namespace Prisma {
 
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[]
-    notIn?: string[]
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -4401,8 +4532,8 @@ export namespace Prisma {
 
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -4412,8 +4543,8 @@ export namespace Prisma {
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -4428,8 +4559,8 @@ export namespace Prisma {
 
   export type NestedFloatFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
     lt?: number | FloatFieldRefInput<$PrismaModel>
     lte?: number | FloatFieldRefInput<$PrismaModel>
     gt?: number | FloatFieldRefInput<$PrismaModel>
@@ -4439,8 +4570,8 @@ export namespace Prisma {
 
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[]
-    notIn?: string[]
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -4456,8 +4587,8 @@ export namespace Prisma {
 
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -4470,8 +4601,8 @@ export namespace Prisma {
 
   export type NestedStringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | null
-    notIn?: string[] | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -4489,8 +4620,8 @@ export namespace Prisma {
 
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | null
-    notIn?: string[] | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -4506,8 +4637,8 @@ export namespace Prisma {
 
   export type NestedIntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -4542,6 +4673,7 @@ export namespace Prisma {
     createdAt?: Date | string
     partner: boolean
     updatedAt?: Date | string
+    embedding?: ProgramCreateembeddingInput | number[]
   }
 
   export type ProgramUncheckedCreateWithoutUniversityInput = {
@@ -4564,6 +4696,7 @@ export namespace Prisma {
     createdAt?: Date | string
     partner: boolean
     updatedAt?: Date | string
+    embedding?: ProgramCreateembeddingInput | number[]
   }
 
   export type ProgramCreateOrConnectWithoutUniversityInput = {
@@ -4573,6 +4706,7 @@ export namespace Prisma {
 
   export type ProgramCreateManyUniversityInputEnvelope = {
     data: ProgramCreateManyUniversityInput | ProgramCreateManyUniversityInput[]
+    skipDuplicates?: boolean
   }
 
   export type ProgramUpsertWithWhereUniqueWithoutUniversityInput = {
@@ -4615,6 +4749,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Program"> | Date | string
     partner?: BoolFilter<"Program"> | boolean
     updatedAt?: DateTimeFilter<"Program"> | Date | string
+    embedding?: FloatNullableListFilter<"Program">
   }
 
   export type UniversityCreateWithoutProgramsListInput = {
@@ -4627,6 +4762,7 @@ export namespace Prisma {
     statistics: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    embedding?: UniversityCreateembeddingInput | number[]
   }
 
   export type UniversityUncheckedCreateWithoutProgramsListInput = {
@@ -4640,6 +4776,7 @@ export namespace Prisma {
     statistics: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    embedding?: UniversityCreateembeddingInput | number[]
   }
 
   export type UniversityCreateOrConnectWithoutProgramsListInput = {
@@ -4668,6 +4805,7 @@ export namespace Prisma {
     statistics?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    embedding?: UniversityUpdateembeddingInput | number[]
   }
 
   export type UniversityUncheckedUpdateWithoutProgramsListInput = {
@@ -4681,6 +4819,7 @@ export namespace Prisma {
     statistics?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    embedding?: UniversityUpdateembeddingInput | number[]
   }
 
   export type ProgramCreateManyUniversityInput = {
@@ -4703,6 +4842,7 @@ export namespace Prisma {
     createdAt?: Date | string
     partner: boolean
     updatedAt?: Date | string
+    embedding?: ProgramCreateembeddingInput | number[]
   }
 
   export type ProgramUpdateWithoutUniversityInput = {
@@ -4724,6 +4864,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     partner?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    embedding?: ProgramUpdateembeddingInput | number[]
   }
 
   export type ProgramUncheckedUpdateWithoutUniversityInput = {
@@ -4746,6 +4887,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     partner?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    embedding?: ProgramUpdateembeddingInput | number[]
   }
 
   export type ProgramUncheckedUpdateManyWithoutUniversityInput = {
@@ -4768,6 +4910,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     partner?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    embedding?: ProgramUpdateembeddingInput | number[]
   }
 
 

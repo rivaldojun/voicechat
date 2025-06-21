@@ -1,6 +1,8 @@
 const { client } = require('../utils/chroma');
 const { GeminiEmbeddingFunction } = require('../../lib/gemini-embedding');
 const embedder = new GeminiEmbeddingFunction("AIzaSyD0phHq4PckAy8vLYlzkAnaHy4tdwT7rxA");
+const { PrismaClient } = require('../../lib/generated/prisma');
+const prisma = new PrismaClient();
 export type FormationMatch = {
     id: string
     titre: string
@@ -61,104 +63,86 @@ export  function buildQueryText(criteria: Record<string, any>): string {
     return `Voici les critères de la formation recherchée :\n${lines.join('\n')}`
   }
 
-export  async function findBestMatchingFormation(criteria: Record<string, any>): Promise<FormationMatch[] | undefined> {
+  export async function findBestMatchingFormation(criteria: Record<string, any>): Promise<FormationMatch[] | undefined> {
     try {
-      const collection = await client.getCollection({
-        name: "programs",
-        embeddingFunction: embedder,
-      })
       const queryText = buildQueryText(criteria)
-      // Query 1: partenaires
-    const partnerResults = await collection.query({
-        queryTexts: [queryText],
-        nResults: 10,
-        embeddingFunction: embedder,
-        where: { partner: true },
-      })
+      const queryEmbedding = await embedder.generate(queryText)
   
-      // Query 2: non-partenaires
-      const nonPartnerResults = await collection.query({
-        queryTexts: [queryText],
-        nResults: 10,
-        embeddingFunction: embedder,
-        where: { partner: false },
+      const formations = await prisma.program.findMany({
+        where: {
+          embedding: {
+            isEmpty: false,
+          },
+        },
       })
-  
-      if ((!partnerResults.ids[0] || partnerResults.ids[0].length === 0) && (!nonPartnerResults.ids[0] || nonPartnerResults.ids[0].length === 0)) {
-        return undefined
+
+      function cosineSimilarity(a: number[], b: number[]): number {
+        const dot = a.reduce((acc, val, i) => acc + val * b[i], 0)
+        const normA = Math.sqrt(a.reduce((acc, val) => acc + val * val, 0))
+        const normB = Math.sqrt(b.reduce((acc, val) => acc + val * val, 0))
+        return dot / (normA * normB)
       }
   
-      // Calculer les scores d'adéquation pour chaque formation
-      function processResults(results: any): FormationMatch[] {
-        if (!results.ids[0]) return []
-        return results.ids[0].map((id: string, index: number) => {
-          const metadata = results.metadatas[0][index]
-          const distance = results.distances?.[0]?.[index] || 1
-          const score = Math.max(0, Math.min(100, (1 - distance / 2) * 100))
+      const processed = formations.map((formation: any) => {
+        const similarity = cosineSimilarity(queryEmbedding, formation.embedding as number[])
+        const baseScore = Math.max(0, Math.min(100, similarity * 100))
   
-          let criteriaScore = 0
-          let criteriaCount = 0
+        let criteriaScore = 0
+        let criteriaCount = 0
   
-          if (criteria.domaine && metadata?.categorie) {
-            criteriaCount++
-            if (
-              String(metadata?.categorie).toLowerCase().includes(String(criteria.domaine).toLowerCase()) ||
-              String(criteria.domaine).toLowerCase().includes(String(metadata?.categorie).toLowerCase())
-            ) {
-              criteriaScore++
-            }
+  
+        if (criteria.niveau && formation.type) {
+          criteriaCount++
+          if (
+            formation.type.toLowerCase().includes(criteria.niveau.toLowerCase())
+          ) {
+            criteriaScore++
           }
+        }
   
-          if (criteria.niveau && metadata?.niveau) {
-            criteriaCount++
-            if (
-              typeof metadata.niveau === "string" &&
-              typeof criteria.niveau === "string" &&
-              metadata.niveau.toLowerCase().includes(criteria.niveau.toLowerCase())
-            ) {
-              criteriaScore++
-            }
+        if (criteria.modalite && formation.delivered) {
+          criteriaCount++
+          if (
+            formation.delivered.toLowerCase().includes(criteria.modalite.toLowerCase())
+          ) {
+            criteriaScore++
           }
+        }
   
-          if (criteria.modalite && metadata?.modalites) {
-            criteriaCount++
-            if (
-              typeof metadata?.modalites === "string" &&
-              typeof criteria.modalite === "string" &&
-              metadata.modalites.toLowerCase().includes(criteria.modalite.toLowerCase())
-            ) {
-              criteriaScore++
-            }
-          }
+        const finalScore =
+          criteriaCount > 0
+            ? baseScore * 0.7 + (criteriaScore / criteriaCount) * 100 * 0.3
+            : baseScore
+
+
+          const stats = JSON.parse(formation.statistics || "[]")
+        return {
+          id: formation?.id || "ID inconnu",
+          titre: formation?.title || "Formation sans titre",
+          ecole: formation?.universityName || "École inconnue",
+          description: formation?.StudyDescription || "Aucune description disponible",
+          categorie: formation?.modality || "Non catégorisée",
+          niveau: formation?.type || "Non spécifié",
+          duree: stats?.find((s: { label: string; value: string }) => s.label === "Duration")?.value || "Non spécifiée",
+          prix: stats?.find((s: { label: string; value: string }) => s.label === "Tuition fee")?.value || "Non spécifié",
+          partner: formation?.partner || false,
+          score: finalScore
+        }
+      })
   
-          const finalScore = criteriaCount > 0
-            ? score * 0.7 + (criteriaScore / criteriaCount) * 100 * 0.3
-            : score
+      const partnerMatches = processed
+        .filter((f: FormationMatch) => f.partner)
+        .sort((a: FormationMatch, b: FormationMatch) => b.score - a.score)
+        .slice(0, 4)
   
-          return {
-            id: metadata?.id || id,
-            titre: metadata?.title || "Formation sans titre",
-            ecole: metadata?.university_name || "École inconnue",
-            description: metadata?.description || "Aucune description disponible",
-            categorie: metadata?.modality || "Non catégorisée",
-            niveau: metadata?.type || "Non spécifié",
-            duree: metadata?.duration || "Non spécifiée",
-            prix: metadata?.school_fees || "Non spécifié",
-            partner: metadata?.partner || false,
-            score: finalScore,
-            metadata,
-          }
-        })
-      }
+      const nonPartnerMatches = processed
+        .filter((f: FormationMatch) => !f.partner)
+        .sort((a: FormationMatch, b: FormationMatch) => b.score - a.score)
+        .slice(0, 2)
   
-    const partnerMatches = processResults(partnerResults).sort((a, b) => b.score - a.score).slice(0, 4)
-    const nonPartnerMatches = processResults(nonPartnerResults).sort((a, b) => b.score - a.score).slice(0, 2)
-  
-    const allMatches = [...partnerMatches, ...nonPartnerMatches]
-    return allMatches.sort((a, b) => b.score - a.score)
+      return [...partnerMatches, ...nonPartnerMatches].sort((a, b) => b.score - a.score)
     } catch (error) {
       console.error("Erreur lors de la recherche de formations:", error)
       return undefined
     }
   }
-  

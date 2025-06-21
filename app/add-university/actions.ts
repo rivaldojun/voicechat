@@ -1,9 +1,9 @@
 "use server"
-const { client } = require('../utils/chroma');
+
+const { PrismaClient } = require('../lib/generated/prisma');
 const { GeminiEmbeddingFunction } = require('../../lib/gemini-embedding');
-// Configuration ChromaDB
 
-
+const prisma = new PrismaClient();
 const embedder = new GeminiEmbeddingFunction("AIzaSyD0phHq4PckAy8vLYlzkAnaHy4tdwT7rxA");
 
 interface UniversityFormData {
@@ -16,9 +16,15 @@ interface UniversityFormData {
   statistics: { label: string; value: string }[]
 }
 
+function cosineSimilarity(a: number[], b: number[]): number {
+  const dot = a.reduce((acc, val, i) => acc + val * b[i], 0);
+  const normA = Math.sqrt(a.reduce((acc, val) => acc + val * val, 0));
+  const normB = Math.sqrt(b.reduce((acc, val) => acc + val * val, 0));
+  return dot / (normA * normB);
+}
+
 export async function addUniversity(formData: UniversityFormData) {
   try {
-    // Préparer les données pour la base SQL
     const universityData = {
       name: formData.name,
       about: JSON.stringify(formData.about.filter((item) => item.trim() !== "")),
@@ -29,15 +35,8 @@ export async function addUniversity(formData: UniversityFormData) {
       statistics: JSON.stringify(
         formData.statistics.filter((stat) => stat.label.trim() !== "" && stat.value.trim() !== ""),
       ),
-    }
+    };
 
-    // Simuler l'insertion en base SQL (remplacer par votre ORM/client DB)
-    // const university = await prisma.university.create({ data: universityData })
-
-    // Pour la démo, on simule un ID
-    const universityId = Math.floor(Math.random() * 10000)
-
-    // Préparer le texte pour l'embedding ChromaDB
     const textForEmbedding = `
       Université: ${formData.name}
       À propos: ${formData.about.join(". ")}
@@ -45,77 +44,68 @@ export async function addUniversity(formData: UniversityFormData) {
       Vie étudiante: ${formData.studentLife.join(". ")}
       Programmes: ${formData.programs.join(", ")}
       Statistiques: ${formData.statistics.map((s) => `${s.label}: ${s.value}`).join(", ")}
-    `.trim()
+    `.trim();
 
-    // Créer ou obtenir la collection ChromaDB pour les universités
-    let collection
-    try {
-      collection = await client.getCollection({
-        name: "universities",
-        embeddingFunction: embedder,
-      })
-    } catch (error) {
-      collection = await client.createCollection({
-        name: "universities",
-        embeddingFunction: embedder,
-      })
-    }
+    const embedding = await embedder.generate(textForEmbedding);
 
-    // Ajouter à ChromaDB
-    await collection.add({
-      ids: [`university_${universityId}`],
-      documents: [textForEmbedding],
-      metadatas: [
-        {
-          id: universityId,
-          name: formData.name,
-          type: "university",
-          created_at: new Date().toISOString(),
-        },
-      ],
-    })
+    const university = await prisma.university.create({
+      data: {
+        ...universityData,
+        embedding: embedding,
+      }
+    });
 
-    return { success: true, id: universityId }
+    return { success: true, id: university.id };
   } catch (error) {
-    console.error("Erreur lors de l'ajout de l'université:", error)
-    return { success: false, error: "Erreur lors de l'ajout de l'université" }
+    console.error("Erreur lors de l'ajout de l'université:", error);
+    return { success: false, error: "Erreur lors de l'ajout de l'université" };
   }
 }
 
 export async function getUniversities() {
   try {
-    // Simuler la récupération depuis la base SQL
-    // const universities = await prisma.university.findMany({ select: { id: true, name: true } })
+    const universities = await prisma.university.findMany({
+      select: {
+        id: true,
+        name: true,
+      }
+    });
 
-    // Pour la démo, on retourne des données simulées
-    const universities = [
-      { id: 1, name: "Université de Paris" },
-      { id: 2, name: "Sorbonne Université" },
-      { id: 3, name: "Université Lyon 1" },
-    ]
-
-    return { success: true, data: universities }
+    return { success: true, data: universities };
   } catch (error) {
-    console.error("Erreur lors de la récupération des universités:", error)
-    return { success: false, error: "Erreur lors de la récupération des universités" }
+    console.error("Erreur lors de la récupération des universités:", error);
+    return { success: false, error: "Erreur lors de la récupération des universités" };
   }
 }
 
 export async function searchUniversities(query: string) {
   try {
-    const collection = await client.getCollection({
-      name: "universities",
-        embeddingFunction: embedder,
-    })
+    const queryEmbedding = await embedder.generate(query);
 
-    const results = await collection.query({
-      queryTexts: [query],
-      nResults: 10,
-    })
+    const universities = await prisma.university.findMany({
+      where: {
+        embedding: {
+          not: null,
+        }
+      },
+      select: {
+        id: true,
+        name: true,
+        embedding: true,
+      }
+    });
 
-    return { success: true, data: results }
+    const scored = universities
+      .map((univ: { id: string; name: string; embedding: number[] | null }) => ({
+        ...univ,
+        similarity: cosineSimilarity(queryEmbedding, univ.embedding as number[]),
+      }))
+      .sort((a: { similarity: number }, b: { similarity: number }) => b.similarity - a.similarity)
+      .slice(0, 10);
+
+    return { success: true, data: scored };
   } catch (error) {
-    console.error("Erreur lors de la recherche:", error)
-    return { success: false, error: "Erreur lors de la recherche" }
+    console.error("Erreur lors de la recherche des universités:", error);
+    return { success: false, error: "Erreur lors de la recherche des universités" };
   }
 }

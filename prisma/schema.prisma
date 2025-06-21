@@ -23,6 +23,7 @@ model University {
   statistics String    // JSON string for statistics array
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
+  embedding  Float[]
   
   // Relation to Program
   programsList Program[]
@@ -50,4 +51,5 @@ model Program {
   createdAt          DateTime  @default(now())
   partner             Boolean
   updatedAt          DateTime  @updatedAt
+  embedding           Float[]
 }
