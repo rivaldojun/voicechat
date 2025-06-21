@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "scripts": {
     "seed": "tsx prisma/seed.js",
-    "dev": "npm run seed && next dev",
+    "dev": "next dev",
     "build": "next build",
-    "start": "npm run seed && next start",
+    "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
