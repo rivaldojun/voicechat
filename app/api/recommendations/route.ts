@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
     // const recommendations = await getRecommendations(formationId, limit)
 
-    return NextResponse.json({  })
+    return NextResponse.json({ message: "Recommandations récupérées avec succès", data: [] }, { status: 200 })
   } catch (error) {
     console.error("Erreur API:", error)
     return NextResponse.json({ error: "Erreur lors de la récupération des recommandations" }, { status: 500 })
