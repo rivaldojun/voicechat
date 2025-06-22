@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   webpack(config, { isServer }) {
     if (isServer) {
         config.externals.push("onnxruntime-node");
@@ -9,6 +10,17 @@ const nextConfig: NextConfig = {
       test: /\.svg$/,
       use: ["@svgr/webpack"],
     });
+    config.externalsPresets = { node: true };
+    config.externals = config.externals || [];
+    config.externals.push({
+      "@prisma/client": "commonjs @prisma/client"
+    });
+
+    config.resolve.alias["@prisma/client"] = path.resolve(
+      __dirname,
+      "lib/generated/prisma"
+    );
+
     return config;
   },
   images: {
