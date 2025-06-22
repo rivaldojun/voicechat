@@ -1,7 +1,10 @@
 const { client } = require('../utils/chroma');
 const { GeminiEmbeddingFunction } = require('../../lib/gemini-embedding');
 const embedder = new GeminiEmbeddingFunction("AIzaSyD0phHq4PckAy8vLYlzkAnaHy4tdwT7rxA")
-const prisma = require('../../lib/prisma');
+const { PrismaClient } = require('../../lib/generated/prisma');
+
+const prisma = new PrismaClient();
+
 export type FormationMatch = {
     id: string
     titre: string
@@ -63,6 +66,8 @@ export  function buildQueryText(criteria: Record<string, any>): string {
   }
 
   export async function findBestMatchingFormation(criteria: Record<string, any>): Promise<FormationMatch[] | undefined> {
+    const data= await prisma.university.findMany()
+    console.log("Universities:", data)
     try {
       const queryText = buildQueryText(criteria)
       const queryEmbedding = await embedder.generate(queryText)
