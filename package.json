@@ -5,7 +5,7 @@
     "install": "npm install --legacy-peer-deps",
     "seed": "tsx prisma/seed.js",
     "dev": "next dev",
-    "build": "prisma generate --no-engine && prisma db push && prisma db seed && rm -rf node_modules && rm -rf .next && rm -f package-lock.json && npm install --legacy-peer-deps && next build",
+    "build": "prisma generate --no-engine && prisma db push && prisma db seed && next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate --no-engine"
