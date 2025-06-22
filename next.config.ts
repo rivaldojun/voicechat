@@ -2,9 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: 'standalone',
-  experimental: {
-    serverComponentsExternalPackages: ['@prisma/client', 'prisma','onnxruntime-node', 'sharp'],
-  },
   webpack(config, { isServer }) {
     if (isServer) {
         config.externals.push("onnxruntime-node");
@@ -29,7 +26,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  serverExternalPackages: ["onnxruntime-node", "@prisma/client", "prisma"],
+  serverExternalPackages: ["onnxruntime-node", "@prisma/client", "prisma",' sharp'],
 };
 
 export default nextConfig;
