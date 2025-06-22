@@ -26,7 +26,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  serverExternalPackages: ["onnxruntime-node", "@prisma/client", "prisma",' sharp'],
+  serverExternalPackages: ['sharp', 'onnxruntime-node'],
 };
 
 export default nextConfig;
