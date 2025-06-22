@@ -1,9 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ['@prisma/client', 'prisma']
-  },
+  // experimental: {
+  //   serverComponentsExternalPackages: ['@prisma/client', 'prisma']
+  // },
   webpack(config, { isServer }) {
     if (isServer) {
         config.externals.push("onnxruntime-node");
