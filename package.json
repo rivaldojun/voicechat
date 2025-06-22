@@ -4,7 +4,7 @@
   "scripts": {
     "seed": "tsx prisma/seed.js",
     "dev": "next dev",
-    "build": "prisma migrate dev --name init && prisma generate && npm run seed && next build",
+    "build": "prisma init && prisma migrate dev --name init && prisma generate && npm run seed && next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate"
