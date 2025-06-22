@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  serverExternalPackages: ["sharp", "onnxruntime-node"]
+  serverExternalPackages: ["onnxruntime-node"]
 };
 
 export default nextConfig;
