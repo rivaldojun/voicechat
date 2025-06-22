@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
   webpack(config, { isServer }) {
     if (isServer) {
         config.externals.push("onnxruntime-web");
+        config.externals.push("@prisma/client");
+        config.externals.push("prisma");
       }
     config.module.rules.push({
       test: /\.svg$/,
