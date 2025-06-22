@@ -1,14 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
   experimental: {
-    serverComponentsExternalPackages: ['@prisma/client', 'prisma']
+    serverComponentsExternalPackages: ['@prisma/client', 'prisma','onnxruntime-node', 'sharp'],
   },
   webpack(config, { isServer }) {
     if (isServer) {
-        config.externals.push("onnxruntime-web");
+        config.externals.push("onnxruntime-node");
         config.externals.push("@prisma/client");
         config.externals.push("prisma");
+        config.externals.push("sharp");
       }
     config.module.rules.push({
       test: /\.svg$/,
@@ -27,7 +29,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  serverExternalPackages: ["onnxruntime-web", "@prisma/client", "prisma"],
+  serverExternalPackages: ["onnxruntime-node", "@prisma/client", "prisma"],
 };
 
 export default nextConfig;
