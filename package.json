@@ -2,6 +2,7 @@
   "name": "my-v0-project",
   "version": "0.1.0",
   "scripts": {
+    "install": "npm install --legacy-peer-deps",
     "seed": "tsx prisma/seed.js",
     "dev": "next dev",
     "build": "prisma generate --no-engine && prisma db push && prisma db seed && rm -rf node_modules && rm -rf .next && rm -f package-lock.json && npm install --legacy-peer-deps && next build",
@@ -84,5 +85,8 @@
     "tailwindcss": "^3.4.17",
     "tsx": "^4.20.3",
     "typescript": "^5"
+  },
+  "overrides": {
+    "date-fns": "^3.6.0"
   }
 }
