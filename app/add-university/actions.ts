@@ -1,6 +1,6 @@
 "use server"
 
-const { PrismaClient } = require('../lib/generated/prisma');
+const { PrismaClient } = require('../../lib/generated/prisma');
 const { GeminiEmbeddingFunction } = require('../../lib/gemini-embedding');
 
 const prisma = new PrismaClient();
