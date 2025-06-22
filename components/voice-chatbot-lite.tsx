@@ -15,8 +15,15 @@ import FormationModal from '@/components/formationModal'
 import UserInfoModal from "./userInfoModal"
 import { generateSpeechWithGemini } from "@/app/actions"
 
-declare var SpeechRecognition: any
-declare var webkitSpeechRecognition: any
+declare global {
+  interface Window {
+    SpeechRecognition: typeof SpeechRecognition;
+    webkitSpeechRecognition: typeof SpeechRecognition;
+  }
+}
+
+declare var SpeechRecognition: any;
+declare var webkitSpeechRecognition: any;
 
 type FormationMatch = {
   id: string
@@ -74,7 +81,7 @@ export default function VoiceChatbot() {
   const [voicePitch, setVoicePitch] = useState(1)
   
   // Refs
-  const recognitionRef = useRef<SpeechRecognition | null>(null)
+  const recognitionRef = useRef<typeof SpeechRecognition | null>(null)
   const synthRef = useRef<SpeechSynthesis | null>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const silenceTimerRef = useRef<NodeJS.Timeout | null>(null)
