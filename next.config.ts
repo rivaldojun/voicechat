@@ -6,8 +6,7 @@ const nextConfig: NextConfig = {
   },
   webpack(config, { isServer }) {
     if (isServer) {
-        config.externals.push("onnxruntime-node");
-        
+        config.externals.push("onnxruntime-web");
       }
     config.module.rules.push({
       test: /\.svg$/,
@@ -26,7 +25,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  serverExternalPackages: ["onnxruntime-node"]
+  serverExternalPackages: ["onnxruntime-web", "@prisma/client", "prisma"],
 };
 
 export default nextConfig;
