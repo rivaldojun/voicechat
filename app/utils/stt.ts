@@ -1,5 +1,5 @@
 'use server';   
-import { AssemblyAI } from "assemblyai";
+import { AssemblyAI, SpeechModel } from "assemblyai";
 
 // Créer une instance du client AssemblyAI avec ta clé API
 const client = new AssemblyAI({
@@ -15,7 +15,7 @@ const transcribeWithAssembly = async (audioBlob: Blob) => {
     // Paramètres pour la transcription
     const params = {
       audio: audioBlob,  // L'URL de l'audio à transcrire
-      speech_model: "universal",  // Choisis le modèle de parole si nécessaire
+      speech_model: "universal" as SpeechModel,  // Cast to the correct type
       language_code: "fr",  // Code de langue pour la transcription
     };
 
