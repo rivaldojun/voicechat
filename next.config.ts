@@ -1,9 +1,10 @@
 import type { NextConfig } from "next";
-
+import { PrismaPlugin } from "@prisma/nextjs-monorepo-workaround-plugin";
 const nextConfig: NextConfig = {
   webpack(config, { isServer }) {
     if (isServer) {
         config.externals.push("onnxruntime-node");
+        config.plugins = [...config.plugins, new PrismaPlugin()];
       }
     config.module.rules.push({
       test: /\.svg$/,

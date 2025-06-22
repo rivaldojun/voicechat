@@ -1,8 +1,7 @@
 const { client } = require('../utils/chroma');
 const { GeminiEmbeddingFunction } = require('../../lib/gemini-embedding');
-const embedder = new GeminiEmbeddingFunction("AIzaSyD0phHq4PckAy8vLYlzkAnaHy4tdwT7rxA");
-const { PrismaClient } = require('../../lib/generated/prisma');
-const prisma = new PrismaClient();
+const embedder = new GeminiEmbeddingFunction("AIzaSyD0phHq4PckAy8vLYlzkAnaHy4tdwT7rxA")
+const prisma = require('../../lib/prisma');
 export type FormationMatch = {
     id: string
     titre: string
