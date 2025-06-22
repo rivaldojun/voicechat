@@ -9,7 +9,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://admit_owner:npg_eGgBPt4DVYs0@ep-still-river-abywea6l-pooler.eu-west-2.aws.neon.tech/admit?sslmode=require"
+  url      = "postgresql://postgres:OgNzALocHOrWaOIZgrZzBYYJvcqgoajO@ballast.proxy.rlwy.net:56205/railway"
 }
 
 
