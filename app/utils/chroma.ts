@@ -12,7 +12,11 @@ export const testConnection = async () => {
     console.log("✅ Connexion ChromaDB réussie");
     return true;
   } catch (error) {
-    console.error("❌ Erreur de connexion ChromaDB:", error.message);
+    if (error instanceof Error) {
+      console.error("❌ Erreur de connexion ChromaDB:", error.message);
+    } else {
+      console.error("❌ Erreur de connexion ChromaDB:", error);
+    }
     return false;
   }
 };

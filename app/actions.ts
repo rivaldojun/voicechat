@@ -4,6 +4,7 @@ import OpenAI from "openai"
 import { cmPrompt, csPrompt } from "./utils/prompt";
 import { extractJSONFromText, findBestMatchingFormation, FormationMatch, extractUserInfoFromText } from "./utils/fonction";
 import {GoogleGenAI} from '@google/genai';
+import wav from 'wav';
 const openai = new OpenAI({
   apiKey: process.env.GEMINI_API_KEY || "AIzaSyD0phHq4PckAy8vLYlzkAnaHy4tdwT7rxA",
   baseURL: "https://generativelanguage.googleapis.com/v1beta/",
@@ -42,7 +43,7 @@ const FINAL_RESPONSE_INTRODUCTION=`
 export async function askLLM(prompt: string, previousMessages: Message[], isFinished:boolean): Promise<AskLLMResponse> {
   let tmpIsFinished = isFinished
   let tmpKycComplete = false
-  let userInfo = {}
+  let userInfo: UserInfo | undefined = undefined
   const conseillerPrompt = csPrompt
   const commercialPrompt = cmPrompt
   let matchedFormation = undefined
@@ -82,11 +83,11 @@ export async function askLLM(prompt: string, previousMessages: Message[], isFini
   if (tmpIsFinished && matchedFormation) {
     finalResponse = FINAL_RESPONSE_INTRODUCTION
   }
-  return {response: finalResponse, isFinished: tmpIsFinished, formation: matchedFormation,tmpKycComplete:tmpKycComplete, userInfo:userInfo}
+  return {response: finalResponse, isFinished: tmpIsFinished, formation: matchedFormation, tmpKycComplete: tmpKycComplete, userInfo: userInfo}
 }
 
 
-import wav from 'wav';
+
 
 async function saveWaveFile(
    filename: string,
