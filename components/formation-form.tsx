@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { saveFormation } from "@/app/add-formation/actions";
 import { toast } from "@/components/ui/use-toast";
 
 const formationSchema = z.object({
@@ -64,7 +63,7 @@ export default function FormationForm() {
   async function onSubmit(data: FormationFormValues) {
     setIsSubmitting(true);
     try {
-      await saveFormation(data);
+      
       toast({
         title: "Formation enregistrée",
         description: "Votre formation a été enregistrée avec succès dans la base de données.",

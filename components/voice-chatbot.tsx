@@ -54,7 +54,7 @@ const handleUnlockAudio = () => {
 
 
   // Refs
-  const recognitionRef = useRef<SpeechRecognition | null>(null)
+  const recognitionRef = useRef<typeof SpeechRecognition | null>(null)
   const synthRef = useRef<SpeechSynthesis | null>(null)
   const silenceTimerRef = useRef<NodeJS.Timeout | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -178,7 +178,7 @@ const mediaRecorderRef = useRef<MediaRecorder | null>(null)
 const hasSpokenRef = useRef(false) // 🆕 Ajoute ceci
 
 
-const silenceThreshold = 15 // volume threshold (tweak if needed)
+const [silenceThreshold, setSilenceThreshold] = useState(15) // volume threshold (tweak if needed)
 const silenceDelay = 2000 // 2 seconds of silence
 
 const startRecording = async () => {
@@ -199,7 +199,7 @@ recorder.onstop = async () => {
       const audioUrl = URL.createObjectURL(audioBlob);
       const output = await transcribeWithAssembly(audioBlob);
       console.log("Transcription:", output);
-      processTranscript(output);
+      processTranscript(output ?? "");
       setIsListening(false)
       console.log("Audio URL:", audioUrl);
       audioChunksRef.current = [];
@@ -310,10 +310,10 @@ const stopRecording = () => {
 
     try {
       // Call server action to get AI response
-      const aiResponse = await askLLM(text)
+      const aiResponse = await askLLM(text, messages, false)
 
       // Add AI response to messages
-      const assistantMessage = { role: "assistant" as const, content: aiResponse }
+      const assistantMessage = { role: "assistant" as const, content: String(aiResponse) }
       setMessages((prev) => [...prev, assistantMessage])
     } catch (error) {
       console.error("Error getting AI response:", error)
@@ -728,11 +728,11 @@ const stopRecording = () => {
 }
 
 // Placeholder component for document uploader
-function DocumentUploader({ onUpload, onCancel }) {
+function DocumentUploader({ onUpload, onCancel }: { onUpload: (docNames: string[]) => void; onCancel: () => void }) {
   const [dragging, setDragging] = useState(false)
   const [files, setFiles] = useState<File[]>([])
 
-  const handleDragOver = (e) => {
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     setDragging(true)
   }
@@ -741,20 +741,20 @@ function DocumentUploader({ onUpload, onCancel }) {
     setDragging(false)
   }
 
-  const handleDrop = (e) => {
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     setDragging(false)
 
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const fileList = Array.from(e.dataTransfer.files)
-      setFiles(fileList)
+      setFiles(fileList as File[])
     }
   }
 
-  const handleFileChange = (e) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const fileList = Array.from(e.target.files)
-      setFiles(fileList)
+      setFiles(fileList as File[])
     }
   }
 
