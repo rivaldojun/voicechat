@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  webpack(config) {
+  webpack(config, { isServer }) {
+    if (isServer) {
+        config.externals.push("onnxruntime-node");
+      }
     config.module.rules.push({
       test: /\.svg$/,
       use: ["@svgr/webpack"],
@@ -19,6 +22,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  serverExternalPackages: ["sharp", "onnxruntime-node"]
 };
 
 export default nextConfig;
