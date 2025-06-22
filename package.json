@@ -4,10 +4,10 @@
   "scripts": {
     "seed": "tsx prisma/seed.js",
     "dev": "next dev",
-    "build": "bunx prisma generate && next build",
+    "build": "prisma migrate dev --name init && prisma generate && npm run seed && next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "bunx prisma generate"
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@ai-sdk/openai": "latest",
